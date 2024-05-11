@@ -104,14 +104,14 @@ class _WelcomePageState extends State<WelcomePage> {
               //first step
               stepsWidget(
                 "Create Account",
-                "First create account your ur email and password. Then you will be able to fill your name, university and other required information. The email you used here will be used login next time you. Additionally it will be displayed on your cv under contact addresses section.",
+                '''First create account using email and password. The email and password will be used to login in the future. The email will also be displayed on your cv under contact addresses section.''',
               ),
               //second step
               stepsWidget("Fill Your Information",
-                  "In this second step you are required to fill your information like name, phone No. , Email address, College or University, Experience if you have any, Languages you are able to speak and other required informations which are vital for you to have on your cv."),
+                  "In this second step you are required to fill your information like name, phone No. , Email address, College or University, Experience if you have any, Languages and other required informations which are vital for you to have on your cv."),
               //third step
               stepsWidget("Download CV",
-                  'After filling your personal information, you can click the "Download My Cv" button which will be displayed on the app screen. The CV will be provided for you in different design and you can download with your prefered design. Then after, The download CV will be put in the Download folder of your internal storage.'),
+                  'After filling your required information, you can click the "Download My Cv" button which will be displayed on the screen of the this app. The CV will be provided for you in different design and you can download with the design you want. Then after, The download CV will be kept in the DOWNLOAD folder of your INTERNAL STORAGE.'),
               //Good luck
               const Text(
                 "=== Good Luck ===",

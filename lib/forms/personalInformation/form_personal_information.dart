@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_cv/forms/Education/form_Education.dart';
+
+//decode and encode json
+import 'dart:convert';
 
 //the logic part of this widget
 import './logic_personal_Information.dart';
@@ -14,7 +18,23 @@ class formPersonalInformation extends StatefulWidget {
 class formPersonalInformationState extends State<formPersonalInformation> {
   final _formKey = GlobalKey<FormState>();
 
+  //first render track to get pi data from server
+  bool _firstTime = true;
+
   bool _submitTapDown = false;
+
+// to track the response from rest api
+  bool _messageSubmitted = false;
+  // the message coming from the rest api
+  String _submitMessage = '';
+
+  var _initialFirstname = '';
+  var _initialLastname = '';
+  var _initialPhoneNumber = '';
+  var _initialEmail = '';
+  var _initialCity = '';
+  var _initialState = '';
+  var _initialAboutMe = '';
 
   var _valueFirstname = '';
   var _valueLastname = '';
@@ -23,6 +43,17 @@ class formPersonalInformationState extends State<formPersonalInformation> {
   var _valueCity = '';
   var _valueState = '';
   var _valueAboutMe = '';
+
+  TextEditingController _controllerFirstname = TextEditingController();
+  TextEditingController _controllerLastname = TextEditingController();
+  TextEditingController _controllerPhoneNumber = TextEditingController();
+  TextEditingController _controllerEmail = TextEditingController();
+  TextEditingController _controllerCity = TextEditingController();
+  TextEditingController _controllerState = TextEditingController();
+  TextEditingController _controllerAboutMe = TextEditingController();
+
+  SendPersonalInformationToCVGenerator sender =
+      SendPersonalInformationToCVGenerator();
 
   Widget _MyTextFormField(
       String name, String example, Icon icon, WhichField field) {
@@ -34,7 +65,9 @@ class formPersonalInformationState extends State<formPersonalInformation> {
             border: Border.all(color: Colors.green),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: TextFormField(
+          child: TextField(
+            readOnly: field == WhichField.Email ? true : false,
+            controller: getController(field),
             onChanged: (newValue) {
               switch (field) {
                 case WhichField.Firstname:
@@ -126,8 +159,16 @@ class formPersonalInformationState extends State<formPersonalInformation> {
     );
   }
 
+  //for the first time
+  bool _forTheFirstTime = true;
+
   @override
   Widget build(BuildContext context) {
+    if (_forTheFirstTime) {
+      getDataFromCVGenerator();
+      _forTheFirstTime = false;
+    }
+
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
       child: Column(
@@ -146,7 +187,6 @@ class formPersonalInformationState extends State<formPersonalInformation> {
           ),
           const SizedBox(height: 30),
           Form(
-            key: _formKey,
             child: Column(
               children: [
                 //firstname textfield
@@ -180,9 +220,25 @@ class formPersonalInformationState extends State<formPersonalInformation> {
                     const Icon(Icons.rotate_90_degrees_ccw),
                     WhichField.AboutMe),
 
-                //some gap between the last text field and the submit btn
-                const SizedBox(height: 20),
+                const SizedBox(height: 10),
 
+                Visibility(
+                  visible: _messageSubmitted,
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    child: Text(
+                      _submitMessage,
+                      textAlign: TextAlign.justify,
+                      style: const TextStyle(
+                          fontWeight: FontWeight.w800, color: Colors.blue),
+                    ),
+                  ),
+                ),
+
+                //some gap between the last text field and the submit btn
+                const SizedBox(height: 10),
+
+                //some gap between the last text field and the submit btn
                 GestureDetector(
                   onTap: () {
                     submittingForm();
@@ -207,7 +263,9 @@ class formPersonalInformationState extends State<formPersonalInformation> {
                     ),
                     child: Center(
                       child: Text(
-                        'Submit',
+                        informationAlreadyExist
+                            ? 'Update The Information'
+                            : 'Save The Information',
                         style: TextStyle(
                             fontWeight: FontWeight.w600,
                             color:
@@ -225,15 +283,131 @@ class formPersonalInformationState extends State<formPersonalInformation> {
     );
   }
 
-  void submittingForm() {
+  void submittingForm() async {
     debugPrint('=== Submitting form... ===');
+    setState(() {
+      _valueFirstname = _controllerFirstname.text;
+      _valueLastname = _controllerLastname.text;
+      _valuePhoneNumber = _controllerPhoneNumber.text;
+      _valueEmail = _controllerEmail.text;
+      _valueCity = _controllerCity.text;
+      _valueState = _controllerState.text;
+      _valueAboutMe = _controllerAboutMe.text;
 
+      _messageSubmitted = true;
+    });
     PI_Object pi_object = PI_Object(_valueFirstname, _valueLastname,
         _valuePhoneNumber, _valueEmail, _valueCity, _valueState, _valueAboutMe);
 
-    SendPersonalInformationToCVGenerator sender =
-        SendPersonalInformationToCVGenerator();
-    sender.sendDataToCVGenerator(pi_object);
+    // debugPrint("firstname : $_valueFirstname ");
+    // debugPrint("lastname : $_valueLastname ");
+    // debugPrint("phoneNumber : $_valuePhoneNumber ");
+    // debugPrint("email : $_valueEmail ");
+    // debugPrint("city : $_valueCity ");
+    // debugPrint("state : $_valueState ");
+    // debugPrint("aboutMe : $_valueAboutMe ");
+
+    String result = await sender.sendDataToCVGenerator(pi_object);
+
+    try {
+      Map<String, dynamic> resultJson = jsonDecode(result.toString());
+
+      debugPrint(' === Result Json === ');
+
+      var operation = resultJson['operation'];
+      var solution = resultJson['solution'];
+      var reason = resultJson['reason'];
+      var success = resultJson['success'];
+
+      if (success == true) {
+        debugPrint('success..');
+        setState(() {
+          _submitMessage = solution;
+        });
+      } else {
+        debugPrint('success == false');
+        setState(() {
+          _submitMessage = "Solution : $solution \nReason: $reason";
+        });
+      }
+    } catch (e) {
+      debugPrint('Error in parsing json or making request to server: \n');
+      debugPrint('$e\n=== Error =====');
+      setState(() {
+        _submitMessage =
+            "Unable to continue your request. Please, retry with available internet connection or contact the developer";
+      });
+    }
+  }
+
+  getInputType(WhichField field) {
+    switch (field) {
+      case WhichField.PhoneNumber:
+        return TextInputType.phone;
+      case WhichField.Email:
+        return TextInputType.emailAddress;
+      case WhichField.AboutMe:
+        return TextInputType.multiline;
+      default:
+        return TextInputType.text;
+    }
+  }
+
+  bool informationAlreadyExist = false;
+  //
+  Future<PI_Object> getDataFromCVGenerator() async {
+    PI_Object PI = await sender.getDataFromCVGenerator();
+    debugPrint("Getting your data from logic ");
+
+    setState(() {
+      _controllerFirstname.text = PI.firstname.toUpperCase();
+      _controllerLastname.text = PI.lastname.toUpperCase();
+      _controllerPhoneNumber.text = PI.phoneNumber.toUpperCase();
+      _controllerEmail.text = PI.email.toUpperCase();
+      _controllerCity.text = PI.city.toUpperCase();
+      _controllerState.text = PI.state.toUpperCase();
+      _controllerAboutMe.text = PI.aboutMe.toUpperCase();
+
+      if (PI.firstname.isNotEmpty) informationAlreadyExist = true;
+    });
+
+    // debugPrint("$_valueFirstname : ${PI.firstname}");
+    // debugPrint("$_valueLastname : ${PI.lastname}");
+    // debugPrint("$_valuePhoneNumber : ${PI.phoneNumber}");
+    // debugPrint("$_valueEmail : ${PI.email}");
+    // debugPrint("$_valueCity : ${PI.city}");
+    // debugPrint("$_valueState : ${PI.state}");
+    // debugPrint("$_valueAboutMe : ${PI.aboutMe}");
+
+    return PI;
+  }
+
+  TextEditingController getController(WhichField field) {
+    TextEditingController thisController = TextEditingController();
+    switch (field) {
+      case WhichField.Firstname:
+        thisController = _controllerFirstname;
+        break;
+      case WhichField.Lastname:
+        thisController = _controllerLastname;
+        break;
+      case WhichField.PhoneNumber:
+        thisController = _controllerPhoneNumber;
+        break;
+      case WhichField.Email:
+        thisController = _controllerEmail;
+        break;
+      case WhichField.City:
+        thisController = _controllerCity;
+        break;
+      case WhichField.State:
+        thisController = _controllerState;
+        break;
+      case WhichField.AboutMe:
+        thisController = _controllerAboutMe;
+        break;
+    }
+    return thisController;
   }
 
   void listenerFirstname(String newFirstname) {
@@ -276,22 +450,6 @@ class formPersonalInformationState extends State<formPersonalInformation> {
     setState(() {
       _valueAboutMe = newAboutMe;
     });
-  }
-
-  getInputType(WhichField field) {
-    switch (field) {
-      case WhichField.PhoneNumber:
-        return TextInputType.phone;
-        break;
-      case WhichField.Email:
-        return TextInputType.emailAddress;
-        break;
-      case WhichField.AboutMe:
-        return TextInputType.multiline;
-        break;
-      default:
-        return TextInputType.text;
-    }
   }
 }
 

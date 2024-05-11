@@ -37,7 +37,7 @@ class _Home_PageState extends State<Home_Page> {
             child: Container(
               margin: const EdgeInsets.all(5),
               decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 235, 233, 233),
+                color: const Color.fromARGB(255, 255, 255, 255),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Center(

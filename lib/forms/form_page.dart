@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import './personalInformation/form_personal_information.dart';
-import './Education/FormEducation.dart';
+import './Education/Form_Education.dart';
 
 class FormWidget extends StatefulWidget {
   whichForm _title;
