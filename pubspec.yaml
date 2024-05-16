@@ -42,6 +42,7 @@ dependencies:
   hive: any
   hive_flutter: any
   isar: any
+  lottie: any
 
 
 dev_dependencies:

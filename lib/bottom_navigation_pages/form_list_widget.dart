@@ -90,7 +90,7 @@ class formListWidgets extends StatelessWidget {
             context),
         // Third List  = EXPERIENCE
         renderForms(
-            'images/experience.webp',
+            'images/experience.png',
             "Experience",
             'Add all of your relevant Experiences to be visible to employers',
             whichForm.experience,

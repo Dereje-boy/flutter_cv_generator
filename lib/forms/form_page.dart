@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import './personalInformation/form_personal_information.dart';
 import './Education/Form_Education.dart';
+import './Experience/form_experience.dart';
 
 class FormWidget extends StatefulWidget {
   whichForm _title;
@@ -23,10 +24,21 @@ class _FormWidgetState extends State<FormWidget> {
         ),
         title: Text(interpretWhichForm(widget._title)),
       ),
-      body: widget._title == whichForm.education
-          ? const FormEducation()
-          : const formPersonalInformation(),
+      body: widget_for_body(widget._title),
     );
+  }
+
+  Widget widget_for_body(whichForm form) {
+    switch (form) {
+      case whichForm.personalInformation:
+        return formPersonalInformation();
+      case whichForm.education:
+        return FormEducation();
+      case whichForm.experience:
+        return FormExperience();
+      default:
+        return formPersonalInformation();
+    }
   }
 }
 

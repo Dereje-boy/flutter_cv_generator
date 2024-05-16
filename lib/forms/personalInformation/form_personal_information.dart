@@ -68,6 +68,7 @@ class formPersonalInformationState extends State<formPersonalInformation> {
           child: TextField(
             readOnly: field == WhichField.Email ? true : false,
             controller: getController(field),
+            maxLines: field == WhichField.AboutMe ? null : 1,
             onChanged: (newValue) {
               switch (field) {
                 case WhichField.Firstname:
