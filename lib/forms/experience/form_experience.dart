@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 
 import './sub_singleExperience.dart';
@@ -25,7 +27,6 @@ class _FormExperienceState extends State<FormExperience> {
 
   final TextEditingController _cPOSITION = TextEditingController();
   final TextEditingController _cSTART_DATE = TextEditingController();
-  // final TextEditingController _cSTILL_HERE = TextEditingController();
   final TextEditingController _cEND_DATE = TextEditingController();
   final TextEditingController _cCOMPANY_NAME = TextEditingController();
   final TextEditingController _cABOUT_EXPERIENCE = TextEditingController();
@@ -47,7 +48,7 @@ class _FormExperienceState extends State<FormExperience> {
       padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
       child: Column(
         children: [
-          const SizedBox(height: 30),
+          const SizedBox(height: 10),
           const Image(
             image: AssetImage(
               'images/experience.png',
@@ -138,14 +139,18 @@ class _FormExperienceState extends State<FormExperience> {
                     submittingForm();
                   },
                   onTapDown: (detail) {
-                    setState(() {
-                      _submitTapDown = true;
-                    });
+                    if (mounted) {
+                      setState(() {
+                        _submitTapDown = true;
+                      });
+                    }
                   },
                   onTapUp: (detail) {
-                    setState(() {
-                      _submitTapDown = false;
-                    });
+                    if (mounted) {
+                      setState(() {
+                        _submitTapDown = false;
+                      });
+                    }
                   },
                   child: Container(
                     padding: const EdgeInsets.all(15),
@@ -190,9 +195,6 @@ class _FormExperienceState extends State<FormExperience> {
               switch (field) {
                 case WhichField.POSITION:
                   POSITION_Listener(newValue);
-                  break;
-                case WhichField.START_DATE:
-                  START_DATE_Listener(newValue);
                   break;
                 case WhichField.END_DATE:
                   END_DATE_Listener(newValue);
@@ -250,7 +252,9 @@ class _FormExperienceState extends State<FormExperience> {
           ),
           const SizedBox(width: 10),
           Text(
-            pickedStartDate.isEmpty ? "Select Start Date" : pickedStartDate,
+            pickedStartDate.isEmpty
+                ? "Start Date:____________"
+                : pickedStartDate,
             style: TextStyle(fontWeight: FontWeight.bold, color: Colors.green),
           ),
           const SizedBox(width: 10),
@@ -328,7 +332,7 @@ class _FormExperienceState extends State<FormExperience> {
           ),
           const SizedBox(width: 10),
           Text(
-            pickedEndDate.isEmpty ? "Select End Date" : pickedEndDate,
+            pickedEndDate.isEmpty ? "End Date:____________" : pickedEndDate,
             style: const TextStyle(
                 fontWeight: FontWeight.bold, color: Colors.green),
           ),
@@ -351,14 +355,40 @@ class _FormExperienceState extends State<FormExperience> {
     List<Experience> thisUserExperience = await sender.getExperience();
 
     experiencesWidget = [];
+    if (thisUserExperience.isEmpty) {
+      experiencesWidget.add(Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+              color: Colors.white, borderRadius: BorderRadius.circular(10)),
+          child: Center(
+            child: Column(
+              children: [
+                Text(
+                  'NO EXPERIENCE FOUND, ',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontWeight: FontWeight.w700, color: Colors.red[400]),
+                ),
+                const Text(
+                  'After you added your experiences, they will be displayed here.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontWeight: FontWeight.w500, fontStyle: FontStyle.italic),
+                ),
+              ],
+            ),
+          )));
+    }
 
-    setState(() {
-      debugPrint("looping over exp...");
-      for (var experience in thisUserExperience) {
-        debugPrint(experience.toString());
-        experiencesWidget.add(singleExperienceWidget(experience, sender));
-      }
-    });
+    if (mounted) {
+      setState(() {
+        debugPrint("looping over exp...");
+        for (var experience in thisUserExperience) {
+          debugPrint(experience.toString());
+          experiencesWidget.add(singleExperienceWidget(experience, sender));
+        }
+      });
+    }
 
     return Column(
       children: experiencesWidget,
@@ -367,39 +397,43 @@ class _FormExperienceState extends State<FormExperience> {
 
   //listener methods
   void POSITION_Listener(String POSITION) {
-    setState(() {
-      _valuePOSITION = POSITION;
-    });
-  }
-
-  void START_DATE_Listener(String START_DATE) {
-    setState(() {
-      _valueSTART_DATE = START_DATE;
-    });
+    if (mounted) {
+      setState(() {
+        _valuePOSITION = POSITION;
+      });
+    }
   }
 
   void STILL_HERE_Listener(bool STILL_HERE) {
-    setState(() {
-      _valueSTILL_HERE = STILL_HERE;
-    });
+    if (mounted) {
+      setState(() {
+        _valueSTILL_HERE = STILL_HERE;
+      });
+    }
   }
 
   void END_DATE_Listener(String END_DATE) {
-    setState(() {
-      _valueEND_DATE = END_DATE;
-    });
+    if (mounted) {
+      setState(() {
+        _valueEND_DATE = END_DATE;
+      });
+    }
   }
 
   void COMPANY_NAME_Listener(String COMPANY_NAME) {
-    setState(() {
-      _valueCOMPANY_NAME = COMPANY_NAME;
-    });
+    if (mounted) {
+      setState(() {
+        _valueCOMPANY_NAME = COMPANY_NAME;
+      });
+    }
   }
 
   void ABOUT_EXPERIENCE_Listener(String ABOUT_EXPERIENCE) {
-    setState(() {
-      _valueABOUT_EXPERIENCE = ABOUT_EXPERIENCE;
-    });
+    if (mounted) {
+      setState(() {
+        _valueABOUT_EXPERIENCE = ABOUT_EXPERIENCE;
+      });
+    }
   }
 
   getInputType(WhichField field) {
@@ -428,7 +462,49 @@ class _FormExperienceState extends State<FormExperience> {
     }
   }
 
-  void submittingForm() {}
+  void submittingForm() async {
+    Experience experience = Experience(
+        "_id",
+        _valuePOSITION,
+        _valueCOMPANY_NAME,
+        _valueABOUT_EXPERIENCE,
+        _valueSTART_DATE,
+        _valueSTILL_HERE,
+        _valueEND_DATE);
+
+    debugPrint(experience.toString());
+
+    String result = await sender.sendExperienceToCVGenerator(experience);
+
+    debugPrint("submit exp form");
+    Map<String, dynamic> resultJson = jsonDecode(result);
+    if (resultJson['success'] == true) {
+      //exp inserted successfully
+      if (mounted) {
+        _cPOSITION.text = '';
+        _cCOMPANY_NAME.text = '';
+        _cABOUT_EXPERIENCE.text = '';
+        _cPOSITION.text = '';
+        setState(() {
+          _messageSubmitted = true;
+          _submitMessage = resultJson['solution'];
+          experiences();
+
+          //resetting end and start date
+          pickedEndDate = 'End Date: ';
+          pickedStartDate = 'Start Date: ';
+        });
+      }
+    } else {
+      setState(() {
+        _messageSubmitted = true;
+        _submitMessage =
+            "Solution: ${resultJson['solution']} \nReason: ${resultJson['reason']}";
+      });
+    }
+    debugPrint(result);
+  }
+
   String pickedStartDate = '';
   String pickedEndDate = '';
 
@@ -439,9 +515,13 @@ class _FormExperienceState extends State<FormExperience> {
         lastDate: DateTime(2050),
         firstDate: DateTime(1960));
     if (picked != null) {
-      setState(() => {
-            pickedStartDate = '${picked.year} / ${picked.month} / ${picked.day}'
-          });
+      if (mounted) {
+        setState(() {
+          pickedStartDate =
+              'Start Date: ${picked.year} / ${picked.month} / ${picked.day}';
+          _valueSTART_DATE = '${picked.year} / ${picked.month} / ${picked.day}';
+        });
+      }
     }
   }
 
@@ -452,8 +532,14 @@ class _FormExperienceState extends State<FormExperience> {
         lastDate: DateTime(2050),
         firstDate: DateTime(1960));
     if (picked != null) {
-      setState(() =>
-          {pickedEndDate = '${picked.year} / ${picked.month}/ ${picked.day}'});
+      if (mounted) {
+        setState(() {
+          pickedEndDate =
+              'End Date: ${picked.year} / ${picked.month}/ ${picked.day}';
+
+          _valueEND_DATE = '${picked.year} / ${picked.month} / ${picked.day}';
+        });
+      }
     }
   }
 }

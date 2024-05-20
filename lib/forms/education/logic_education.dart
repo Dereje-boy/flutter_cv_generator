@@ -140,14 +140,12 @@ class SendEducation {
 
         // debugPrint(' === Result Json === ');
       } else {
-        // return PI_Object("", "", "", "", "", "", "");
         return thisUserEducations;
       }
     } catch (e) {
       // Handle error
       String error = e.toString();
       debugPrint('Error: $error');
-      // return PI_Object("", "", "", "", "", "", "");
       return thisUserEducations;
     }
   }

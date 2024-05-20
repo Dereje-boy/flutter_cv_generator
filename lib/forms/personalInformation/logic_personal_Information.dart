@@ -16,6 +16,9 @@ import 'package:http/http.dart' as http;
 //sending information gathered to backend service
 class SendPersonalInformationToCVGenerator {
   Future<String> sendDataToCVGenerator(PI_Object payload) async {
+    // const baseUrl = 'cv.dere.com.et';
+    const baseUrl = 'localhost:3000';
+
     try {
       final myBox = await Hive.openBox("myBox");
       final _token = await myBox.get('token');
@@ -34,15 +37,13 @@ class SendPersonalInformationToCVGenerator {
       debugPrint('token: $_token');
 
       debugPrint("Sending actual PI data");
-      const url = 'http://localhost:3000/basicInformation';
-      const url2 = 'localhost:3000/api/basicInformation';
 
       final Map<String, String> cookieMap = {'cookie': 'token = $_token'};
 
       final client = http.Client();
 
       final res = await client.post(
-          Uri.http('localhost:3000', 'api/basicInformation/new'),
+          Uri.http(baseUrl, 'api/basicInformation/new'),
           body: fullData,
           headers: cookieMap);
 

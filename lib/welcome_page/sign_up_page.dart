@@ -2,13 +2,15 @@
 
 import 'package:flutter/material.dart';
 
-//dio
-import 'package:dio/dio.dart';
+import 'package:http/http.dart' as http;
+
+import 'package:client_cookie/src/client_cookie_base.dart';
 
 //hive
 import 'package:hive/hive.dart';
 
 import 'package:flutter_cv/bottom_navigation_pages/home_page.dart';
+import 'package:jaguar_resty/jaguar_resty.dart';
 
 //home page with bottom nav bars
 import '../home_page/home.dart';
@@ -407,11 +409,11 @@ class _SignUpPageState extends State<SignUpPage> {
 
     //do another things here...
     debugPrint("Sending data backend.....");
+    final client = http.Client();
 
-    final Dio _dio = Dio();
+    const baseUrl = 'localhost:3000';
+    // const url = 'http://localhost:3000/signup';
 
-    const url = 'http://localhost:3000/signup';
-    // const url = 'http://cv.dere.com.et/signup';
     final fullData = {
       'email': emailAddress,
       'password': password,
@@ -419,19 +421,20 @@ class _SignUpPageState extends State<SignUpPage> {
     };
 
     try {
-      var signupResponse = await _dio.post(url, data: fullData);
+      final signupResponse =
+          await client.post(Uri.http(baseUrl, 'signup'), body: fullData);
       // Handle response
-      debugPrint('Response: $signupResponse');
+      debugPrint('Response: ${signupResponse.body}');
 
-      Map<String, dynamic> jsonResponse = jsonDecode(signupResponse.toString());
+      Map<String, dynamic> jsonResponse = jsonDecode(signupResponse.body);
       //debugPrint('jsonResponse: $jsonResponse[\'message\']');
-      debugPrint(jsonResponse['message']);
+      debugPrint('message: ' + jsonResponse['message']);
 
       setState(() {
         _stillSendingToBackend = false;
       });
 
-      //status == false, everything is alright, but...
+      //status == false, everything is alright
       if (jsonResponse['status'] != false) {
         setState(() {
           _errorFound = true;
@@ -445,21 +448,13 @@ class _SignUpPageState extends State<SignUpPage> {
           _errorMessage = 'Successfully Registered';
         });
 
-        const setCookie = 'set-cookie';
-
-        List<String>? cookies = signupResponse.headers[setCookie];
         String actualToken = '';
-
-        //check if it is not null and has a value(not empty)
-        if (cookies != null && cookies.isNotEmpty) {
-          for (var cookie in cookies) {
-            //if it contains token we are fine to extract the cookie named token
-            if (cookie.contains('token')) {
-              actualToken = cookie.split(';')[0].split('=')[1];
-              debugPrint(actualToken);
-            }
-          }
+        ClientCookie? tokenClientCookie = signupResponse.cookies['token'];
+        if (tokenClientCookie != null) {
+          actualToken = tokenClientCookie.value;
+          debugPrint("tokenClientCookie = $actualToken");
         }
+
         try {
           final myBox = await Hive.openBox("myBox");
           await myBox.put('email', emailAddress);
@@ -486,9 +481,13 @@ class _SignUpPageState extends State<SignUpPage> {
     } catch (e) {
       // Handle error
       debugPrint('Error: $e');
-      setState(() {
-        _stillSendingToBackend = false;
-      });
+      if (mounted) {
+        setState(() {
+          _stillSendingToBackend = false;
+          _errorFound = true;
+          _errorMessage = ' $e Please check your internet connection';
+        });
+      }
     }
   }
 }

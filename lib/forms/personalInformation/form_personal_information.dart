@@ -358,19 +358,20 @@ class formPersonalInformationState extends State<formPersonalInformation> {
   //
   Future<PI_Object> getDataFromCVGenerator() async {
     PI_Object PI = await sender.getDataFromCVGenerator();
-    debugPrint("Getting your data from logic ");
 
-    setState(() {
-      _controllerFirstname.text = PI.firstname.toUpperCase();
-      _controllerLastname.text = PI.lastname.toUpperCase();
-      _controllerPhoneNumber.text = PI.phoneNumber.toUpperCase();
-      _controllerEmail.text = PI.email.toUpperCase();
-      _controllerCity.text = PI.city.toUpperCase();
-      _controllerState.text = PI.state.toUpperCase();
-      _controllerAboutMe.text = PI.aboutMe.toUpperCase();
+    if (mounted) {
+      setState(() {
+        _controllerFirstname.text = PI.firstname.toUpperCase();
+        _controllerLastname.text = PI.lastname.toUpperCase();
+        _controllerPhoneNumber.text = PI.phoneNumber.toUpperCase();
+        _controllerEmail.text = PI.email.toUpperCase();
+        _controllerCity.text = PI.city.toUpperCase();
+        _controllerState.text = PI.state.toUpperCase();
+        _controllerAboutMe.text = PI.aboutMe.toUpperCase();
 
-      if (PI.firstname.isNotEmpty) informationAlreadyExist = true;
-    });
+        if (PI.firstname.isNotEmpty) informationAlreadyExist = true;
+      });
+    }
 
     // debugPrint("$_valueFirstname : ${PI.firstname}");
     // debugPrint("$_valueLastname : ${PI.lastname}");

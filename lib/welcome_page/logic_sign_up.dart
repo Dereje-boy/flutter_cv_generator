@@ -1,4 +1,4 @@
-import 'package:dio/dio.dart';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 
 class logicSignUp {
@@ -7,9 +7,12 @@ class logicSignUp {
 
   Future<dynamic> sendDataToCVGenerator() async {
     debugPrint("Sending data backend.....");
-    final Dio _dio = Dio();
 
-    const url = 'http://localhost:3000/signup';
+    final client = http.Client();
+
+    const baseUrl = 'localhost:3000';
+    // const url = 'http://localhost:3000/signup';
+
     final fullData = {
       'email': email,
       'password': password,
@@ -17,10 +20,11 @@ class logicSignUp {
     };
 
     try {
-      var response = await _dio.post(url, data: fullData);
+      final signupResponse =
+          await client.post(Uri.http(baseUrl, 'signup'), body: fullData);
       // Handle response
-      debugPrint('Response: $response');
-      return response;
+      debugPrint('Response: ${signupResponse.body}');
+      return signupResponse.body;
     } catch (e) {
       // Handle error
       debugPrint('Error: $e');

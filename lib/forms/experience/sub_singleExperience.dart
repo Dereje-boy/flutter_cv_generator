@@ -21,8 +21,8 @@ class _singleExperienceWidgetState extends State<singleExperienceWidget> {
     return Visibility(
       visible: !deleted,
       child: Container(
-        padding: EdgeInsets.fromLTRB(10, 10, 10, 5),
-        margin: EdgeInsets.all(5),
+        padding: const EdgeInsets.fromLTRB(10, 10, 10, 5),
+        margin: const EdgeInsets.all(5),
         decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(10),
@@ -50,7 +50,7 @@ class _singleExperienceWidgetState extends State<singleExperienceWidget> {
                 ),
               ],
             ),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
             Column(
@@ -125,7 +125,7 @@ class _singleExperienceWidgetState extends State<singleExperienceWidget> {
             Row(
               children: [
                 const Text(
-                  "_id",
+                  "_id: ",
                   style: TextStyle(
                       fontSize: 18,
                       color: Colors.white,
@@ -147,44 +147,52 @@ class _singleExperienceWidgetState extends State<singleExperienceWidget> {
                   decoration: BoxDecoration(color: Colors.red),
                   child: OutlinedButton(
                     onPressed: () {
-                      setState(() {
-                        deleted = true;
-                      });
-
-                      // widget._sender
-                      //     .deleteEducation(widget.education.id)
-                      //     .then((response) {
-                      //   try {
-                      //     Map<String, dynamic> resultJson = jsonDecode(response);
-
-                      //     var operation = resultJson['operation'];
-                      //     var solution = resultJson['solution'];
-                      //     var reason = resultJson['reason'];
-                      //     var success = resultJson['success'];
-
-                      //     if (success == true) {
-                      //       debugPrint('success == true');
-                      //       Map<String, dynamic> solutionJson =
-                      //           jsonDecode(jsonEncode(solution));
-
-                      //       //{ acknowledged: true, deletedCount: 1 }
-                      //       debugPrint('solutionJson == $solutionJson');
-                      //       if (solutionJson['acknowledged'] == true &&
-                      //           solutionJson['deletedCount'] == 1) {
-                      //         setState(() {
-                      //           deleted = true;
-                      //         });
-                      //       }
-                      //     }
-                      //   } catch (error) {
-                      //     Map<String, dynamic> result = {
-                      //       "operation": "delete",
-                      //       "success": false,
-                      //       "reason": " '''${error.toString().trim()}",
-                      //       "solution": "Connect to Internet."
-                      //     };
-                      // }
+                      // setState(() {
+                      //   deleted = true;
                       // });
+
+                      widget._sender
+                          .deleteExperience(widget.experience.id)
+                          .then((response) {
+                        try {
+                          Map<String, dynamic> resultJson =
+                              jsonDecode(response);
+
+                          var operation = resultJson['operation'];
+                          var solution = resultJson['solution'];
+                          var reason = resultJson['reason'];
+                          var success = resultJson['success'];
+
+                          if (success == true) {
+                            debugPrint('success == true');
+                            Map<String, dynamic> solutionJson =
+                                jsonDecode(jsonEncode(solution));
+
+                            //{ acknowledged: true, deletedCount: 1 }
+                            debugPrint('solutionJson == $solutionJson');
+                            if (solutionJson['acknowledged'] == true &&
+                                solutionJson['deletedCount'] == 1) {
+                              setState(() {
+                                deleted = true;
+                              });
+                            }
+                          }
+                        } catch (error) {
+                          Map<String, dynamic> result = {
+                            "operation": "delete",
+                            "success": false,
+                            "reason": " '''${error.toString().trim()}",
+                            "solution": "Connect to Internet."
+                          };
+                        }
+                      }).catchError((error) {
+                        Map<String, dynamic> result = {
+                          "operation": "delete",
+                          "success": false,
+                          "reason": " '''${error.toString().trim()}",
+                          "solution": "Connect to Internet or Retry Later"
+                        };
+                      });
                     },
                     child: const Text(
                       "Delete",

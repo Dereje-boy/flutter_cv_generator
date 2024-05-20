@@ -11,7 +11,57 @@ import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 
 class SendExperience {
-  void sendExperienceToCVGenerator(Experience experience) {}
+  Future<String> sendExperienceToCVGenerator(Experience experience) async {
+    try {
+      final myBox = await Hive.openBox("myBox");
+      final _token = await myBox.get('token');
+
+      final fullData = {
+        'position': experience.position,
+        'companyName': experience.companyName,
+        'aboutExperience': experience.aboutExperience,
+        'startDate': experience.startDate,
+        'stillHere': experience.stillHere.toString(),
+        'endDate': experience.endDate,
+        'cookie': _token
+      };
+
+      debugPrint("Sending Experience data backend");
+      debugPrint(fullData.toString());
+
+      debugPrint('token: $_token');
+
+      final Map<String, String> cookieMap = {'cookie': 'token = $_token'};
+
+      final client = http.Client();
+
+      final res = await client.post(
+          Uri.http('localhost:3000', 'api/experience/new'),
+          body: fullData,
+          headers: cookieMap);
+
+      debugPrint("after response");
+      debugPrint(res.body);
+      return res.body;
+    } catch (e) {
+      // Handle error
+      String error = e.toString();
+      debugPrint('Error: $error');
+
+      // ignore: unused_local_variable, prefer_interpolation_to_compose_strings
+      String result = '''{
+        "operation":"Insert",
+        "success":false,
+        "reason":" ''' +
+          error.trim() +
+          ''' ",
+        "solution":"Connect to Internet."
+      }''';
+
+      return result;
+    }
+  }
+
   Future<List<Experience>> getExperience() async {
     List<Experience> experiences = [];
     try {
@@ -75,7 +125,40 @@ class SendExperience {
     }
   }
 
-  void deleteExperience(String expID) {}
+  Future<String> deleteExperience(String expID) async {
+    try {
+      final myBox = await Hive.openBox("myBox");
+      final _token = await myBox.get('token');
+
+      debugPrint("Sending Delete EDUCATION request to server");
+
+      final client = http.Client();
+
+      final Map<String, String> query = {'_id': expID.trim(), 'cookie': _token};
+      final queryString = Uri(queryParameters: query).query;
+
+      final res = await client.delete(Uri.parse(
+          'http://localhost:3000/api/experience/delete?$queryString'));
+
+      debugPrint(res.body);
+      return res.body;
+    } catch (e) {
+      // Handle error
+      String error = e.toString();
+      debugPrint('Delete Error: $error');
+
+      // ignore: prefer_interpolation_to_compose_strings
+      String result = '''{
+        "operation":"delete",
+        "success":false,
+        "reason":" ''' +
+          error.trim() +
+          ''' ",
+        "solution":"Connect to Internet."
+      }''';
+      return result;
+    }
+  }
 }
 
 class Experience {
@@ -84,17 +167,17 @@ class Experience {
       _companyName,
       _aboutExperience,
       _startDate,
-      _stilleHere,
+      _stillHere,
       _endDate;
   Experience(this._id, this._position, this._companyName, this._aboutExperience,
-      this._startDate, this._stilleHere, this._endDate);
+      this._startDate, this._stillHere, this._endDate);
 
   String get id => _id;
   String get position => _position;
   String get companyName => _companyName;
   String get aboutExperience => _aboutExperience;
   String get startDate => _startDate;
-  String get stilleHere => _stilleHere;
+  bool get stillHere => _stillHere;
   String? get endDate => _endDate;
 
   @override
@@ -105,7 +188,7 @@ class Experience {
   'companyName' : '${_companyName}'
   'aboutExperience' : '${_aboutExperience}'
   'startDate' : '${_startDate}'
-  'stilleHere' : '${_stilleHere}'
+  'stilleHere' : '${_stillHere.toString()}'
   'endDate' : '${_endDate}'
 ''';
   }

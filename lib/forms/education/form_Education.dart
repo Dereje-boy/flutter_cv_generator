@@ -44,7 +44,7 @@ class _FormEducationState extends State<FormEducation> {
       padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
       child: Column(
         children: [
-          const SizedBox(height: 30),
+          const SizedBox(height: 10),
           const Image(
             image: AssetImage(
               'images/education.jpg',
@@ -250,19 +250,21 @@ class _FormEducationState extends State<FormEducation> {
       var solution = resultJson['solution'];
       var reason = resultJson['reason'];
       var success = resultJson['success'];
-
-      setState(() {
-        _messageSubmitted = true;
-      });
+      if (mounted) {
+        setState(() {
+          _messageSubmitted = true;
+        });
+      }
 
       // debugPrint('success..');
       String message = '';
       if (success == true) {
         message = solution;
         educations();
-      } else
+      } else {
         // debugPrint('success == false');
         message = "Solution : $solution \nReason: $reason";
+      }
 
       setState(() {
         _submitMessage = message;
@@ -340,6 +342,30 @@ class _FormEducationState extends State<FormEducation> {
   educations() async {
     List<Education> thisUserEducations = await sender.getEducations();
     educationsWidget = [];
+    if (thisUserEducations.isEmpty) {
+      educationsWidget.add(Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+              color: Colors.white, borderRadius: BorderRadius.circular(10)),
+          child: Center(
+            child: Column(
+              children: [
+                Text(
+                  'NO EDUCATION FOUND, ',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontWeight: FontWeight.w700, color: Colors.red[400]),
+                ),
+                const Text(
+                  'After you added your educations, they will be displayed here.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontWeight: FontWeight.w500, fontStyle: FontStyle.italic),
+                ),
+              ],
+            ),
+          )));
+    }
     for (var education in thisUserEducations) {
       debugPrint(education.toString());
       // educationsWidget.add(await singleEducation(education));

@@ -1,19 +1,19 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'dart:io';
+//http
+import 'package:http/http.dart' as http;
+import 'package:client_cookie/src/client_cookie_base.dart';
 import 'package:flutter/material.dart';
 
 //sign up page, when 'sign up' button clicked
 import 'package:flutter_cv/welcome_page/sign_up_page.dart';
+import 'package:jaguar_resty/jaguar_resty.dart';
 
 //home page with bottom nav bars, while logging in success
 import '../home_page/home.dart';
 
 //hive
 import 'package:hive/hive.dart';
-
-//dio
-import 'package:dio/dio.dart';
 
 //working with json
 import 'dart:convert';
@@ -37,8 +37,6 @@ class _LoginPageState extends State<LoginPage> {
 
   var emailAddress = '';
   var password = '';
-
-  var prefs;
 
   @override
   Widget build(BuildContext context) {
@@ -91,9 +89,11 @@ class _LoginPageState extends State<LoginPage> {
               ),
               child: TextField(
                 onChanged: (newEmail) {
-                  setState(() {
-                    emailAddress = newEmail;
-                  });
+                  if (mounted) {
+                    setState(() {
+                      emailAddress = newEmail;
+                    });
+                  }
                 },
                 style: const TextStyle(
                     fontWeight: FontWeight.bold, color: Colors.blue),
@@ -122,9 +122,11 @@ class _LoginPageState extends State<LoginPage> {
               child: TextField(
                 obscureText: true,
                 onChanged: (newPassword) {
-                  setState(() {
-                    password = newPassword;
-                  });
+                  if (mounted) {
+                    setState(() {
+                      password = newPassword;
+                    });
+                  }
                 },
                 style: const TextStyle(
                     fontWeight: FontWeight.bold, color: Colors.blue),
@@ -158,14 +160,18 @@ class _LoginPageState extends State<LoginPage> {
             GestureDetector(
               onTap: onTapLogin,
               onTapDown: (details) {
-                setState(() {
-                  _loginUpButtonTapDown = true;
-                });
+                if (mounted) {
+                  setState(() {
+                    _loginUpButtonTapDown = true;
+                  });
+                }
               },
               onTapUp: (details) {
-                setState(() {
-                  _loginUpButtonTapDown = false;
-                });
+                if (mounted) {
+                  setState(() {
+                    _loginUpButtonTapDown = false;
+                  });
+                }
               },
               child: Container(
                 padding: const EdgeInsets.all(15),
@@ -209,14 +215,18 @@ class _LoginPageState extends State<LoginPage> {
                 debugPrint('Forgot window');
               },
               onTapDown: (detail) {
-                setState(() {
-                  _forgotButtonTapDown = true;
-                });
+                if (mounted) {
+                  setState(() {
+                    _forgotButtonTapDown = true;
+                  });
+                }
               },
               onTapUp: (detail) {
-                setState(() {
-                  _forgotButtonTapDown = false;
-                });
+                if (mounted) {
+                  setState(() {
+                    _forgotButtonTapDown = false;
+                  });
+                }
               },
             ),
 
@@ -268,14 +278,18 @@ class _LoginPageState extends State<LoginPage> {
                 );
               },
               onTapDown: (detail) {
-                setState(() {
-                  _signUpButtonTapDown = true;
-                });
+                if (mounted) {
+                  setState(() {
+                    _signUpButtonTapDown = true;
+                  });
+                }
               },
               onTapUp: (detail) {
-                setState(() {
-                  _signUpButtonTapDown = false;
-                });
+                if (mounted) {
+                  setState(() {
+                    _signUpButtonTapDown = false;
+                  });
+                }
               },
             )
           ],
@@ -289,61 +303,70 @@ class _LoginPageState extends State<LoginPage> {
 
     //checking all fields here....
     if (emailAddress.length < 6) {
-      setState(() {
-        _errorFound = true;
-        _errorMessage = "Email shouldn't be less than six characters";
-      });
+      if (mounted) {
+        setState(() {
+          _errorFound = true;
+          _errorMessage = "Email shouldn't be less than six characters";
+        });
+      }
       return;
     }
 
     if (!emailAddress.contains("@")) {
-      setState(() {
-        _errorFound = true;
-        _errorMessage = "Email should contain @ symbol";
-      });
+      if (mounted) {
+        setState(() {
+          _errorFound = true;
+          _errorMessage = "Email should contain @ symbol";
+        });
+      }
       return;
     }
 
     if (!emailAddress.contains(".")) {
-      setState(() {
-        _errorFound = true;
-        _errorMessage = "Email should contain . (dot) symbol";
-      });
+      if (mounted) {
+        setState(() {
+          _errorFound = true;
+          _errorMessage = "Email should contain . (dot) symbol";
+        });
+      }
       return;
     }
 
     if (password.length < 5) {
-      setState(() {
-        _errorFound = true;
-        _errorMessage = "Password shouldn't be less than five characters.";
-      });
+      if (mounted) {
+        setState(() {
+          _errorFound = true;
+          _errorMessage = "Password shouldn't be less than five characters.";
+        });
+      }
       return;
     }
 
     // no more error,
-    setState(() {
-      _errorFound = true;
-      _errorMessage = "Sending to backend...";
+    if (mounted) {
+      setState(() {
+        _errorFound = true;
+        _errorMessage = "Sending to backend...";
 
-      //for loading animation...
-      _stillSendingToBackend = true;
-    });
+        //for loading animation...
+        _stillSendingToBackend = true;
+      });
+    }
 
-    //dio here
+    final client = http.Client();
 
-    final Dio _dio = Dio();
+    const baseUrl = 'localhost:3000';
 
-    const url = 'http://localhost:3000/login';
-    // const url = 'http://cv.dere.com.et/login';
     final fullData = {
       'email': emailAddress,
       'password': password,
     };
 
     try {
-      var loginResponse = await _dio.post(url, data: fullData);
+      final loginResponse =
+          await client.post(Uri.http(baseUrl, 'login'), body: fullData);
       // Handle response
-      debugPrint('Response: $loginResponse');
+      debugPrint('Response: ${loginResponse.body}');
 
       /*
       what we get as a response
@@ -356,36 +379,34 @@ class _LoginPageState extends State<LoginPage> {
 
       */
 
-      Map<String, dynamic> jsonResponse = jsonDecode(loginResponse.toString());
+      Map<String, dynamic> jsonResponse =
+          jsonDecode(loginResponse.body.toString());
       debugPrint('jsonResponse: $jsonResponse');
       // debugPrint(jsonResponse['message']);
 
-      setState(() {
-        _stillSendingToBackend = false;
-      });
+      if (mounted) {
+        setState(() {
+          _stillSendingToBackend = false;
+        });
+      }
 
       //if success true = you are logged in
       if (jsonResponse['success'] == true) {
-        setState(() {
-          _errorFound = true;
-          _errorMessage = 'Successfully logged in... Now redirecting';
-        });
+        if (mounted) {
+          setState(() {
+            _errorFound = true;
+            _errorMessage = 'Successfully logged in... Now redirecting';
+          });
+        }
 
-        const setCookie = 'set-cookie';
-
-        List<String>? cookies = loginResponse.headers[setCookie];
         String actualToken = '';
 
-        //check if it is not null and has a value(not empty)
-        if (cookies != null && cookies.isNotEmpty) {
-          for (var cookie in cookies) {
-            //if it contains token we are fine to extract the cookie named token
-            if (cookie.contains('token')) {
-              actualToken = cookie.split(';')[0].split('=')[1];
-              debugPrint(actualToken);
-            }
-          }
+        ClientCookie? tokenClientCookie = loginResponse.cookies['token'];
+        if (tokenClientCookie != null) {
+          actualToken = tokenClientCookie.value;
+          debugPrint("tokenClientCookie = $actualToken");
         }
+
         try {
           final myBox = await Hive.openBox("myBox");
           await myBox.put('email', emailAddress);
@@ -393,7 +414,7 @@ class _LoginPageState extends State<LoginPage> {
           await myBox.put('token', actualToken);
 
           //not started working
-          await getPi();
+          // await getPi();
 
           debugPrint("Hived saved the data successfully");
           // final myEmail = await myBox.get('email');
@@ -413,31 +434,37 @@ class _LoginPageState extends State<LoginPage> {
           ),
         );
       } else if (jsonResponse['success'] == false) {
-        setState(() {
-          _errorFound = true;
-          _errorMessage = jsonResponse['error'];
-        });
+        if (mounted) {
+          setState(() {
+            _errorFound = true;
+            _errorMessage = jsonResponse['error'];
+          });
+        }
       } else {
-        setState(() {
-          _errorFound = true;
-          _errorMessage = 'Please check you internet connection';
-        });
+        if (mounted) {
+          setState(() {
+            _errorFound = true;
+            _errorMessage = 'Please check your internet connection';
+          });
+        }
       }
     } catch (e) {
       // Handle error
       debugPrint('Error: $e');
-      setState(() {
-        _stillSendingToBackend = false;
-        _errorFound = true;
-        _errorMessage = 'Please check you internet connection';
-      });
+      if (mounted) {
+        setState(() {
+          _stillSendingToBackend = false;
+          _errorFound = true;
+          _errorMessage = ' $e Please check your internet connection';
+        });
+      }
     }
   }
 
   //not working
   getPi() async {
-    final Dio _dio = Dio();
+    // final Dio _dio = Dio();
 
-    const url = 'http://localhost:3000/login';
+    // const url = 'http://localhost:3000/login';
   }
 }
