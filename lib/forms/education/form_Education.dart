@@ -269,13 +269,16 @@ class _FormEducationState extends State<FormEducation> {
       setState(() {
         _submitMessage = message;
       });
-      setState(() {
-        //reset the input fields
-        if (success == true) {
+      //reset the input fields
+      if (success == true) {
+        setState(() {
           _cUniversityName.text =
               _cCGPA.text = _cDocumentTitle.text = _cYearOfGraduation.text = '';
-        }
-      });
+
+          _valueUniversityName =
+              _valueCGPA = _valueDocumentTitle = _valueYearOfGraduation = '';
+        });
+      }
     } catch (e) {
       debugPrint('Error in parsing json or making request to server: \n');
       debugPrint('$e\n=== Error =====');

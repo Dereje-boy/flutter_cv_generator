@@ -38,14 +38,19 @@ class _singleEducationWidgetState extends State<singleEducationWidget> {
                       color: Colors.orange,
                       fontWeight: FontWeight.w500),
                 ),
-                Text(
-                  widget.education.nameOfUniversity.toString().toUpperCase(),
-                  style: const TextStyle(
-                      fontSize: 16,
-                      color: Colors.blue,
-                      fontWeight: FontWeight.w500),
+                Expanded(
+                  child: Text(
+                    widget.education.nameOfUniversity.toString().toUpperCase(),
+                    style: const TextStyle(
+                        fontSize: 16,
+                        color: Colors.blue,
+                        fontWeight: FontWeight.w500),
+                  ),
                 ),
               ],
+            ),
+            SizedBox(
+              height: 10,
             ),
             Row(
               children: [
@@ -56,14 +61,19 @@ class _singleEducationWidgetState extends State<singleEducationWidget> {
                       color: Colors.orange,
                       fontWeight: FontWeight.w500),
                 ),
-                Text(
-                  widget.education.titleOfDocument.toString().toUpperCase(),
-                  style: const TextStyle(
-                      fontSize: 16,
-                      color: Colors.blue,
-                      fontWeight: FontWeight.w500),
+                Expanded(
+                  child: Text(
+                    widget.education.titleOfDocument.toString().toUpperCase(),
+                    style: const TextStyle(
+                        fontSize: 16,
+                        color: Colors.blue,
+                        fontWeight: FontWeight.w500),
+                  ),
                 ),
               ],
+            ),
+            SizedBox(
+              height: 10,
             ),
             Row(
               children: [
@@ -74,17 +84,22 @@ class _singleEducationWidgetState extends State<singleEducationWidget> {
                       color: Colors.orange,
                       fontWeight: FontWeight.w500),
                 ),
-                Text(
-                  widget.education.yearOfGraduation
-                      .toString()
-                      .toUpperCase()
-                      .substring(0, 10),
-                  style: const TextStyle(
-                      fontSize: 16,
-                      color: Colors.blue,
-                      fontWeight: FontWeight.w500),
+                Expanded(
+                  child: Text(
+                    widget.education.yearOfGraduation
+                        .toString()
+                        .toUpperCase()
+                        .substring(0, 10),
+                    style: const TextStyle(
+                        fontSize: 16,
+                        color: Colors.blue,
+                        fontWeight: FontWeight.w500),
+                  ),
                 ),
               ],
+            ),
+            SizedBox(
+              height: 10,
             ),
             Row(
               children: [
@@ -95,12 +110,14 @@ class _singleEducationWidgetState extends State<singleEducationWidget> {
                       color: Colors.orange,
                       fontWeight: FontWeight.w500),
                 ),
-                Text(
-                  "${widget.education.CGPA.toString()}  CGPA",
-                  style: const TextStyle(
-                      fontSize: 16,
-                      color: Colors.blue,
-                      fontWeight: FontWeight.w500),
+                Expanded(
+                  child: Text(
+                    "${widget.education.CGPA.toString()}  CGPA",
+                    style: const TextStyle(
+                        fontSize: 16,
+                        color: Colors.blue,
+                        fontWeight: FontWeight.w500),
+                  ),
                 ),
               ],
             ),
@@ -113,12 +130,14 @@ class _singleEducationWidgetState extends State<singleEducationWidget> {
                       color: Colors.white,
                       fontWeight: FontWeight.w500),
                 ),
-                Text(
-                  widget.education.id,
-                  style: const TextStyle(
-                      fontSize: 16,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w500),
+                Expanded(
+                  child: Text(
+                    widget.education.id,
+                    style: const TextStyle(
+                        fontSize: 16,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500),
+                  ),
                 ),
               ],
             ),

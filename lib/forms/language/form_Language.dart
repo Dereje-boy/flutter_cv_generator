@@ -64,116 +64,110 @@ class _FormLanguageState extends State<FormLanguage> {
           const SizedBox(height: 30),
 
           //language name field
-          Column(
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border.all(color: Colors.green),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: TextFormField(
-                  onChanged: (newValue) {
-                    setState(() {
-                      _valueLanguageName = newValue;
-                    });
-                  },
-                  controller: _cLanguageName,
-                  keyboardType: TextInputType.text,
-                  // controller: _cLanguageName,
-                  style: const TextStyle(
-                      fontWeight: FontWeight.bold, color: Colors.green),
-                  decoration: const InputDecoration(
-                    border: InputBorder.none,
-                    hintText: "Amharic",
-                    prefixIcon: Icon(
-                      Icons.circle,
-                      color: Colors.green,
-                    ),
-                  ),
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              border: Border.all(color: Colors.green),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: TextFormField(
+              onChanged: (newValue) {
+                if (mounted) {
+                  setState(() {
+                    _valueLanguageName = newValue;
+                  });
+                }
+              },
+              controller: _cLanguageName,
+              keyboardType: TextInputType.text,
+              // controller: _cLanguageName,
+              style: const TextStyle(
+                  fontWeight: FontWeight.bold, color: Colors.green),
+              decoration: const InputDecoration(
+                border: InputBorder.none,
+                hintText: "Amharic",
+                prefixIcon: Icon(
+                  Icons.circle,
+                  color: Colors.green,
                 ),
               ),
-              const SizedBox(height: 10),
-            ],
+            ),
           ),
+          const SizedBox(height: 10),
 
           //language level drop down
-          Column(
-            children: [
-              Container(
-                padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border.all(color: Colors.green),
-                  borderRadius: BorderRadius.circular(8),
+          Container(
+            padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              border: Border.all(color: Colors.green),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.stairs,
+                  color: Colors.green,
                 ),
-                child: Row(
-                  children: [
-                    const Icon(
-                      Icons.stairs,
-                      color: Colors.green,
-                    ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    Expanded(
-                      child: DropdownButton(
-                          items: const [
-                            DropdownMenuItem(
-                              value: "Native",
-                              child: Text(
-                                "Native",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.green),
-                              ),
-                            ),
-                            DropdownMenuItem(
-                              value: "Fluent",
-                              child: Text(
-                                "Fluent",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.green),
-                              ),
-                            ),
-                            DropdownMenuItem(
-                              value: "Advanced",
-                              child: Text(
-                                "Advanced",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.green),
-                              ),
-                            ),
-                            DropdownMenuItem(
-                              value: "Beginner",
-                              child: Text(
-                                "Beginner",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.green),
-                              ),
-                            ),
-                          ],
-                          value: _valueLanguageLevel,
-                          onChanged: ((value) {
-                            setState(() {
-                              _valueLanguageLevel = value ?? '';
-                            });
-                          })),
-                    ),
-                    const SizedBox(
-                      width: 20,
-                    ),
-                  ],
+                const SizedBox(
+                  width: 10,
                 ),
-              ),
-              const SizedBox(height: 10),
-            ],
+                Expanded(
+                  child: DropdownButton(
+                      items: const [
+                        DropdownMenuItem(
+                          value: "Native",
+                          child: Text(
+                            "Native",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.green),
+                          ),
+                        ),
+                        DropdownMenuItem(
+                          value: "Fluent",
+                          child: Text(
+                            "Fluent",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.green),
+                          ),
+                        ),
+                        DropdownMenuItem(
+                          value: "Advanced",
+                          child: Text(
+                            "Advanced",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.green),
+                          ),
+                        ),
+                        DropdownMenuItem(
+                          value: "Beginner",
+                          child: Text(
+                            "Beginner",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.green),
+                          ),
+                        ),
+                      ],
+                      value: _valueLanguageLevel,
+                      onChanged: ((value) {
+                        if (mounted) {
+                          setState(() {
+                            _valueLanguageLevel = value ?? '';
+                          });
+                        }
+                      })),
+                ),
+                const SizedBox(
+                  width: 20,
+                ),
+              ],
+            ),
           ),
-
-          const SizedBox(height: 10),
+          const SizedBox(height: 20),
 
           Visibility(
             visible: _messageSubmitted,
@@ -195,14 +189,18 @@ class _FormLanguageState extends State<FormLanguage> {
               submittingForm();
             },
             onTapDown: (detail) {
-              setState(() {
-                _submitTapDown = true;
-              });
+              if (mounted) {
+                setState(() {
+                  _submitTapDown = true;
+                });
+              }
             },
             onTapUp: (detail) {
-              setState(() {
-                _submitTapDown = false;
-              });
+              if (mounted) {
+                setState(() {
+                  _submitTapDown = false;
+                });
+              }
             },
             child: Container(
               padding: const EdgeInsets.all(15),
@@ -263,9 +261,11 @@ class _FormLanguageState extends State<FormLanguage> {
       languagesWidget.add(singleLanguageWidget(sender, language));
     }
 
-    setState(() {
-      _firstTime = false;
-    });
+    if (mounted) {
+      setState(() {
+        _firstTime = false;
+      });
+    }
   }
 
   final SendLanguage sender = SendLanguage();
@@ -295,26 +295,31 @@ class _FormLanguageState extends State<FormLanguage> {
         String message = '';
         if (success == true) {
           message = solution;
-          languages();
-
-          //reset the input fields
-          _cLanguageName.text = '';
+          setState(() {
+            languages();
+            //reset the input fields
+            _cLanguageName.text = '';
+          });
         } else {
           debugPrint('success == false');
           message = "Solution : $solution \nReason: $reason";
         }
-        setState(() {
-          _submitMessage = message;
-        });
+        if (mounted) {
+          setState(() {
+            _submitMessage = message;
+          });
+        }
       }
     } catch (e) {
       debugPrint('Error in parsing json or making request to server: \n');
       debugPrint('$e\n=== Error =====');
-      setState(() {
-        _messageSubmitted = true;
-        _submitMessage =
-            "Unable to continue your request. Please, retry with internet connection available or contact the developer";
-      });
+      if (mounted) {
+        setState(() {
+          _messageSubmitted = true;
+          _submitMessage =
+              "Unable to continue your request. Please, retry with internet connection available or contact the developer";
+        });
+      }
     }
   }
 }

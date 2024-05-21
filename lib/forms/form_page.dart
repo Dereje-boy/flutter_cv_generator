@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_cv/forms/reference/form_reference.dart';
 import './personalInformation/form_personal_information.dart';
 import './Education/Form_Education.dart';
 import './Experience/form_experience.dart';
 import './Language/form_Language.dart';
+import 'hobby/form_Hobby.dart';
 
 class FormWidget extends StatefulWidget {
   whichForm _title;
@@ -39,6 +41,10 @@ class _FormWidgetState extends State<FormWidget> {
         return FormExperience();
       case whichForm.languages:
         return FormLanguage();
+      case whichForm.reference:
+        return FormReference();
+      case whichForm.hobbies:
+        return FormHobby();
       default:
         return formPersonalInformation();
     }

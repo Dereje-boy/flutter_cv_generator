@@ -481,18 +481,22 @@ class _FormExperienceState extends State<FormExperience> {
     if (resultJson['success'] == true) {
       //exp inserted successfully
       if (mounted) {
-        _cPOSITION.text = '';
-        _cCOMPANY_NAME.text = '';
-        _cABOUT_EXPERIENCE.text = '';
-        _cPOSITION.text = '';
         setState(() {
           _messageSubmitted = true;
           _submitMessage = resultJson['solution'];
           experiences();
 
-          //resetting end and start date
+          //resetting
           pickedEndDate = 'End Date: ';
           pickedStartDate = 'Start Date: ';
+
+          _cPOSITION.text = '';
+          _cCOMPANY_NAME.text = '';
+          _cABOUT_EXPERIENCE.text = '';
+
+          _valuePOSITION = '';
+          _valueCOMPANY_NAME = '';
+          _valueABOUT_EXPERIENCE = '';
         });
       }
     } else {

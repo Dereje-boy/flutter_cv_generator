@@ -1,19 +1,24 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 
-class singleLanguageWidget extends StatefulWidget {
-  final _sender, _language;
-  const singleLanguageWidget(this._sender, this._language, {super.key});
+import 'package:flutter_cv/forms/reference/logic_reference.dart';
+
+class singleReferenceWidget extends StatefulWidget {
+  final SendReference _sender;
+  final Reference _reference;
+
+  const singleReferenceWidget(this._sender, this._reference, {super.key});
 
   @override
-  State<singleLanguageWidget> createState() => _singlLanguagenWidgetState();
+  State<singleReferenceWidget> createState() => _singleReferenceWidgetState();
 }
 
-class _singlLanguagenWidgetState extends State<singleLanguageWidget> {
+class _singleReferenceWidgetState extends State<singleReferenceWidget> {
   bool deleted = false;
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('rendering \n${widget._reference.toString()}');
     return Visibility(
       visible: !deleted,
       child: Container(
@@ -28,7 +33,7 @@ class _singlLanguagenWidgetState extends State<singleLanguageWidget> {
             Row(
               children: [
                 const Text(
-                  "Language:\t",
+                  "Fullname:\t",
                   style: TextStyle(
                       fontSize: 18,
                       color: Colors.orange,
@@ -36,7 +41,7 @@ class _singlLanguagenWidgetState extends State<singleLanguageWidget> {
                 ),
                 Expanded(
                   child: Text(
-                    widget._language.language.toString().toUpperCase(),
+                    widget._reference.fullname.toString().toUpperCase(),
                     style: const TextStyle(
                         fontSize: 16,
                         color: Colors.blue,
@@ -45,13 +50,10 @@ class _singlLanguagenWidgetState extends State<singleLanguageWidget> {
                 ),
               ],
             ),
-            SizedBox(
-              height: 10,
-            ),
             Row(
               children: [
                 const Text(
-                  "Level:\t",
+                  "Phone No.:\t",
                   style: TextStyle(
                       fontSize: 18,
                       color: Colors.orange,
@@ -59,7 +61,47 @@ class _singlLanguagenWidgetState extends State<singleLanguageWidget> {
                 ),
                 Expanded(
                   child: Text(
-                    widget._language.level.toString().toUpperCase(),
+                    widget._reference.phoneNumber.toString().toUpperCase(),
+                    style: const TextStyle(
+                        fontSize: 16,
+                        color: Colors.blue,
+                        fontWeight: FontWeight.w500),
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                const Text(
+                  "Email:\t",
+                  style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.orange,
+                      fontWeight: FontWeight.w500),
+                ),
+                Expanded(
+                  child: Text(
+                    widget._reference.email.toString().toUpperCase(),
+                    style: const TextStyle(
+                        fontSize: 16,
+                        color: Colors.blue,
+                        fontWeight: FontWeight.w500),
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                const Text(
+                  "Role:\t",
+                  style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.orange,
+                      fontWeight: FontWeight.w500),
+                ),
+                Expanded(
+                  child: Text(
+                    widget._reference.role.toString().toUpperCase(),
                     style: const TextStyle(
                         fontSize: 16,
                         color: Colors.blue,
@@ -78,7 +120,7 @@ class _singlLanguagenWidgetState extends State<singleLanguageWidget> {
                       fontWeight: FontWeight.w500),
                 ),
                 Text(
-                  widget._language.id,
+                  widget._reference.id,
                   style: const TextStyle(
                       fontSize: 16,
                       color: Colors.white,
@@ -87,7 +129,7 @@ class _singlLanguagenWidgetState extends State<singleLanguageWidget> {
               ],
             ),
             OutlinedButton(
-              onPressed: deleteLanguage,
+              onPressed: deleteReference,
               child: const Text(
                 "Delete",
                 style:
@@ -100,8 +142,8 @@ class _singlLanguagenWidgetState extends State<singleLanguageWidget> {
     );
   }
 
-  void deleteLanguage() {
-    widget._sender.deleteLanguage(widget._language.id).then((response) {
+  void deleteReference() async {
+    widget._sender.deleteReference(widget._reference.id).then((response) {
       try {
         Map<String, dynamic> resultJson = jsonDecode(response);
 

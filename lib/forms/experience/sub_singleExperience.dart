@@ -122,6 +122,27 @@ class _singleExperienceWidgetState extends State<singleExperienceWidget> {
                 ),
               ],
             ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const Text(
+                  "About Experience ",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.orange,
+                      fontWeight: FontWeight.w500),
+                ),
+                Text(
+                  widget.experience.aboutExperience.toString().toUpperCase(),
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                      fontSize: 16,
+                      color: Colors.blue,
+                      fontWeight: FontWeight.w500),
+                ),
+              ],
+            ),
             Row(
               children: [
                 const Text(
@@ -147,10 +168,6 @@ class _singleExperienceWidgetState extends State<singleExperienceWidget> {
                   decoration: BoxDecoration(color: Colors.red),
                   child: OutlinedButton(
                     onPressed: () {
-                      // setState(() {
-                      //   deleted = true;
-                      // });
-
                       widget._sender
                           .deleteExperience(widget.experience.id)
                           .then((response) {
